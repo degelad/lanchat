@@ -33,6 +33,18 @@ public class Controller {
     PasswordField passwordField;
 
     @FXML
+    HBox upperPanelReg;
+
+    @FXML
+    TextField loginfieldreg;
+
+    @FXML
+    TextField nicknamefieldreg;
+
+    @FXML
+    PasswordField passwordFieldreg;
+
+    @FXML
     ListView<String> clientList;
 
 // 5 создаем сокет и входящий и исходящий потоки
@@ -52,6 +64,8 @@ public class Controller {
         if (!isAuthohorized) {
             upperPanel.setVisible(true);
             upperPanel.setManaged(true);
+            upperPanelReg.setVisible(true);
+            upperPanelReg.setManaged(true);
             bottomPanel.setVisible(false);
             bottomPanel.setManaged(false);
             clientList.setVisible(false);
@@ -59,6 +73,8 @@ public class Controller {
         } else {
             upperPanel.setVisible(false);
             upperPanel.setManaged(false);
+            upperPanelReg.setVisible(false);
+            upperPanelReg.setManaged(false);
             bottomPanel.setVisible(true);
             bottomPanel.setManaged(true);
             clientList.setVisible(true);
@@ -151,5 +167,29 @@ public class Controller {
             e.printStackTrace();
         }
     }
+//метод регистрации пользователя
+    public void tryToReg() {
+        connect();
+        try {
+            out.writeUTF("/regus " + loginfieldreg.getText() + " " + nicknamefieldreg.getText() + " " + passwordFieldreg.getText());
+            loginfieldreg.clear();
+            nicknamefieldreg.clear();
+            passwordFieldreg.clear();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+//метод смены ник-нейм
+//    public void ToRename() {
+//        connect();
+//        try {
+//            out.writeUTF("/renick " + loginfieldreg.getText() + " " + nicknamefieldreg.getText() + " " + passwordFieldreg.getText());
+//            loginfieldreg.clear();
+//            nicknamefieldreg.clear();
+//            passwordFieldreg.clear();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

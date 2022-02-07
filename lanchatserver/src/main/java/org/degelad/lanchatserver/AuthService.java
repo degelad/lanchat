@@ -1,5 +1,6 @@
 package org.degelad.lanchatserver;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -59,6 +60,59 @@ public class AuthService {
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    public static void getRenameNick(String oldnick, String newnick) {
+
+        try {
+                stmt.executeQuery("update userTable set nickname='" + newnick + "' where nickname = '" + oldnick + "'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+    }
+}
+
+//метод проверки наличия пользователя в базе по логину.
+    public static String getLogin(String login) {
+
+        try {
+            ResultSet rs = stmt.executeQuery("select login from userTable where login = '" + login + "'");
+            if (rs.next()) {
+                String dblogin = rs.getString(1);
+                if (login.equalsIgnoreCase(dblogin)) {
+                    return dblogin;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+//метод проверки наличия пользователя в базе по ник-нейм.
+
+    public static boolean getNick(String nick) {
+
+        try {
+            ResultSet rs = stmt.executeQuery("select nickname from userTable where nickname = '" + nick + "'");
+            if (rs.next()) {
+                String dbnick = rs.getString(1);
+                if (nick.equalsIgnoreCase(dbnick)) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+//метод проверки пароля пользователя при регистрации, пока что только проверяет есть ли пароль или пустой
+
+    public static boolean getPass(String pass) {
+
+        if (pass != null) {
+            return true;
+        }
+        return false;
     }
 
     public static void disconnect() {
