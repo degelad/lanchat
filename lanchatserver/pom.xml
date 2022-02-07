@@ -10,6 +10,16 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+    
+    <dependencies>
+    <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
+    <dependency>
+        <groupId>org.xerial</groupId>
+        <artifactId>sqlite-jdbc</artifactId>
+        <version>3.36.0.3</version>
+    </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -22,8 +32,8 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <!--Этот плагин добавляем, иначе в манифест не попадет запись о наличие main класса в jar файле-->
             <plugin>
+            <!--Этот плагин добавляем, иначе в манифест не попадет запись о наличие main класса в jar файле-->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.0</version>
@@ -33,6 +43,28 @@
                             <mainClass>org.degelad.lanchatserver.App</mainClass>
                         </manifest>
                     </archive> 
+                </configuration>
+            </plugin>
+            <!--Плагин для добавляения зависимостей в итоговый jar-->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <archive>   
+                        <manifest>
+                            <mainClass>org.degelad.lanchatserver.App</mainClass>
+                        </manifest>
+                    </archive> 
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
                 </configuration>
             </plugin>
         </plugins>

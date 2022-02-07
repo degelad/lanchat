@@ -21,6 +21,28 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <!--Плагин для добавляения зависимостей в итоговый jar-->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <archive>   
+                        <manifest>
+                            <mainClass>org.degelad.lanchatclient.App</mainClass>
+                        </manifest>
+                    </archive> 
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
             <!--Этот плагин добавляем, иначе в манифест не попадет запись о наличие main класса в jar файле-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
