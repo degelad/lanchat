@@ -23,9 +23,7 @@ public class ClientHandler {
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
             this.blackList = new ArrayList<>();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+server.getExecutorService().execute(()-> {
                     try {
                         while (true) {                                          //цикл отвечающий за авторизация клиента
                             String str = in.readUTF();
@@ -131,11 +129,7 @@ public class ClientHandler {
 
                         server.unsubscribe(ClientHandler.this);                 //удалениe клиента из списка рассылки broadcastMsg (из Vector<ClientHandler> clients)
                     }
-
-                }
-
-            }
-            ).start();
+            });
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -158,7 +152,5 @@ public class ClientHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
 }
