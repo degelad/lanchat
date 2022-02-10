@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *
@@ -13,19 +15,16 @@ import java.util.Vector;
 public class Server {
 
     private Vector<ClientHandler> clients;
+    private ExecutorService executorService;
 
     public Server() throws SQLException {
-
+        executorService = Executors.newCachedThreadPool();
         clients = new Vector<>();
         ServerSocket server = null;
         Socket socket = null;
 
         try {
             AuthService.connect();
-//добавляем пока что руками пользователей в таблицу бд
-//            AuthService.addUser("login1", "pass1", "nick1");
-//            AuthService.addUser("login2", "pass2", "nick2");
-//            AuthService.addUser("login3", "pass3", "nick3");
 
             server = new ServerSocket(8189);
             System.out.println("Сервер запущен");
@@ -39,6 +38,7 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            executorService.shutdown();
             try {
                 socket.close();
                 server.close();
@@ -98,4 +98,9 @@ public class Server {
         clients.remove(client);
         broadcastClientList();
     }
+
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
+
 }

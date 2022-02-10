@@ -23,16 +23,14 @@ public class ClientHandler {
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
             this.blackList = new ArrayList<>();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+server.getExecutorService().execute(()-> {
                     try {
                         while (true) {                                          //цикл отвечающий за авторизация клиента
                             String str = in.readUTF();
                             if (str.startsWith("/auth")) {                      //Если от клиента поступит /auth значит он хочет авторизоваться
                                 String[] tokens = str.split(" ");
                                 String newNick = AuthService.getNickLoginAndPass(tokens[1], tokens[2]);
-                                if (newNick != null) {                          //Проверяем не пустой ли ник и не занят ли он, если авторизация успешна, отправляем сообщение пользователю /authok и подписывем его в список клиентов
+                                if (newNick != null) {                          //Проверяем не пустой ли ник и не в сети ли он, если авторизация успешна, отправляем сообщение пользователю /authok и подписывем его в список клиентов
                                     if (!server.isNickBusy(newNick)) {
                                         sendMsg("/authok");
                                         nick = newNick;
@@ -44,6 +42,34 @@ public class ClientHandler {
                                 } else {
                                     sendMsg("Неверный логин/пароль");
                                 }
+                            }
+
+                            try {
+
+                                if (str.startsWith("/regus")) {                      //Если от клиента поступит /regus значит он хочет зарегестрироваться
+                                    String[] tokens = str.split(" ");
+                                    String newLogin = AuthService.getLogin(tokens[1]);
+                                    Boolean newNick = AuthService.getNick(tokens[2]);
+                                    Boolean newPass = AuthService.getPass(tokens[3]);
+                                    if (newLogin != null) {
+                                        sendMsg("Такой логин уже используется");
+                                        break;
+
+                                    } else if (newNick) {
+                                        sendMsg("Такой ник-нейм уже используется");
+                                        break;
+                                    } else if (newPass != true) {
+                                        sendMsg("Введите пароль");
+                                        break;
+                                    } else {
+                                        AuthService.addUser(tokens[1], tokens[3], tokens[2]);
+                                        sendMsg("Вы зарегестрированы, пройдите авторизацию");
+                                        break;
+                                    }
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                sendMsg("Заполните все поля");
                             }
                         }
 
@@ -64,6 +90,19 @@ public class ClientHandler {
                                     sendMsg("Вы добавили пользователя " + tokens[1] + " в черный список");
                                 }
 
+                                if (str.startsWith("/renick")) {                     //смена ник-нейм /renick [new nickname]
+                                    String[] tokens = str.split(" ");
+                                    String oldnick = ClientHandler.this.getNick();
+                                    if (!AuthService.getNick(tokens[1])) {
+                                    AuthService.getRenameNick(oldnick, tokens[1]);
+                                        server.broadcastMsg(ClientHandler.this, oldnick + " сменил ник-нейм на " + tokens[1]);
+                                        sendMsg("После смены ник-нейма, необходимо пройти авторизацию");
+                                        out.writeUTF("/severclosed");
+                                        break;
+                                    } else {
+                                        sendMsg("Такой ник-нейм уже занят");
+                                    }
+                                }
                             } else {
                                 server.broadcastMsg(ClientHandler.this, nick + " " + str);
                             }
@@ -90,11 +129,7 @@ public class ClientHandler {
 
                         server.unsubscribe(ClientHandler.this);                 //удалениe клиента из списка рассылки broadcastMsg (из Vector<ClientHandler> clients)
                     }
-
-                }
-
-            }
-            ).start();
+            });
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -117,7 +152,5 @@ public class ClientHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
 }

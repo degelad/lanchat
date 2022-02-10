@@ -18,6 +18,12 @@
         <PasswordField fx:id="passwordField" promptText="Пароль" onAction="#tryToAuth"/>
         <Button text = "Авторизоваться" onAction="#tryToAuth"/>
     </HBox>
+    <HBox fx:id="upperPanelReg">
+        <TextField fx:id = "loginfieldreg" HBox.hgrow = "ALWAYS" promptText = "Логин"/>
+        <TextField fx:id = "nicknamefieldreg" HBox.hgrow = "ALWAYS" promptText = "Имя в чате"/>
+        <PasswordField fx:id="passwordFieldreg" promptText="Пароль" onAction="#tryToReg"/>
+        <Button text = "Зарегестрироваться" onAction="#tryToReg"/>
+    </HBox>
     
     <!--Расстягиваем вертикально еще один блок-->
     <!--Внутри него еще блок и расстягиваем горизонтально-->
